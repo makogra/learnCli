@@ -1,0 +1,176 @@
+{
+  "category": "github-actions-ci",
+  "version": 1,
+  "challenges": [
+    {
+      "id": 1,
+      "title": "Create Your First GitHub Actions Workflow",
+      "description": "Create a basic GitHub Actions workflow that runs on every push.",
+      "difficulty": "easy",
+      "tags": ["github-actions", "ci"],
+      "estimated_minutes": 20,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Create .github/workflows/ci.yml file.",
+          "verification": {
+            "type": "filesystem_exists",
+            "params": {
+              "path": "./.github/workflows/ci.yml"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Configure workflow to trigger on push.",
+          "verification": {
+            "type": "file_contains",
+            "params": {
+              "path": "./.github/workflows/ci.yml",
+              "expected": "on: push"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Build Application in CI",
+      "description": "Extend workflow to install dependencies and build the application.",
+      "difficulty": "medium",
+      "tags": ["github-actions", "build"],
+      "estimated_minutes": 25,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Add a step that checks out repository using actions/checkout.",
+          "verification": {
+            "type": "file_contains",
+            "params": {
+              "path": "./.github/workflows/ci.yml",
+              "expected": "actions/checkout"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Add a build step that compiles your application.",
+          "verification": {
+            "type": "file_contains",
+            "params": {
+              "path": "./.github/workflows/ci.yml",
+              "expected": "build"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Run Tests in CI",
+      "description": "Add automated test execution to your GitHub Actions pipeline.",
+      "difficulty": "medium",
+      "tags": ["github-actions", "testing", "ci"],
+      "estimated_minutes": 25,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Add a step that runs your test command.",
+          "verification": {
+            "type": "file_contains",
+            "params": {
+              "path": "./.github/workflows/ci.yml",
+              "expected": "test"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Push code and confirm workflow fails when a test is broken.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "echo Simulate failing test",
+              "expected": "Simulate"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Build Docker Image in CI",
+      "description": "Extend workflow to build a Docker image after successful tests.",
+      "difficulty": "medium",
+      "tags": ["github-actions", "docker", "ci"],
+      "estimated_minutes": 30,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Add a step to set up Docker Buildx.",
+          "verification": {
+            "type": "file_contains",
+            "params": {
+              "path": "./.github/workflows/ci.yml",
+              "expected": "docker/setup-buildx-action"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Add a step to build Docker image using docker build command.",
+          "verification": {
+            "type": "file_contains",
+            "params": {
+              "path": "./.github/workflows/ci.yml",
+              "expected": "docker build"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Break the Pipeline and Fix It",
+      "description": "Intentionally break the workflow and debug why it fails.",
+      "difficulty": "hard",
+      "tags": ["github-actions", "debugging", "ci"],
+      "estimated_minutes": 40,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Modify workflow to use an invalid action version.",
+          "verification": {
+            "type": "file_contains",
+            "params": {
+              "path": "./.github/workflows/ci.yml",
+              "expected": "@v999"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Push changes and observe workflow failure in GitHub Actions.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "echo Check GitHub UI for failure",
+              "expected": "Check"
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "Fix the version and verify pipeline passes again.",
+          "verification": {
+            "type": "file_contains",
+            "params": {
+              "path": "./.github/workflows/ci.yml",
+              "expected": "@v"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

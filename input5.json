@@ -1,0 +1,217 @@
+{
+  "category": "kubernetes-basics",
+  "version": 1,
+  "challenges": [
+    {
+      "id": 1,
+      "title": "Start Local Kubernetes Cluster",
+      "description": "Start a local Kubernetes cluster using Minikube or Kind and verify kubectl works.",
+      "difficulty": "easy",
+      "tags": ["kubernetes", "minikube", "kind", "kubectl"],
+      "estimated_minutes": 20,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Start Minikube or create a Kind cluster.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "kubectl get nodes",
+              "expected": "Ready"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Run a Simple Pod",
+      "description": "Create a Pod manifest running nginx and apply it using kubectl.",
+      "difficulty": "easy",
+      "tags": ["kubernetes", "pod", "kubectl"],
+      "estimated_minutes": 25,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Create pod.yaml defining a Pod running nginx.",
+          "verification": {
+            "type": "filesystem_exists",
+            "params": {
+              "path": "./pod.yaml"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Apply the manifest using kubectl apply.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "kubectl get pods",
+              "expected": "nginx"
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "Check logs of the Pod.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "kubectl logs nginx",
+              "expected": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Break the Pod Image and Debug",
+      "description": "Deploy a Pod with an invalid image and debug the failure using kubectl.",
+      "difficulty": "medium",
+      "tags": ["kubernetes", "pod", "debugging"],
+      "estimated_minutes": 30,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Modify pod.yaml to use a non-existent image.",
+          "verification": {
+            "type": "file_contains",
+            "params": {
+              "path": "./pod.yaml",
+              "expected": "invalid"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Apply the broken manifest and observe Pod status.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "kubectl get pods",
+              "expected": "ImagePullBackOff"
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "Fix the image and re-apply until Pod is Running.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "kubectl get pods",
+              "expected": "Running"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Create a Deployment",
+      "description": "Replace the Pod with a Deployment managing replicas.",
+      "difficulty": "medium",
+      "tags": ["kubernetes", "deployment"],
+      "estimated_minutes": 30,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Create deployment.yaml with 2 replicas of nginx.",
+          "verification": {
+            "type": "filesystem_exists",
+            "params": {
+              "path": "./deployment.yaml"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Apply deployment and verify multiple Pods are running.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "kubectl get pods",
+              "expected": "2/"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Expose Deployment with a Service",
+      "description": "Create a Service to expose your Deployment and access it locally.",
+      "difficulty": "medium",
+      "tags": ["kubernetes", "service", "networking"],
+      "estimated_minutes": 35,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Create service.yaml exposing nginx Deployment on port 80.",
+          "verification": {
+            "type": "filesystem_exists",
+            "params": {
+              "path": "./service.yaml"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Apply the Service and verify it exists.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "kubectl get services",
+              "expected": "nginx"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Deploy Your Own Application",
+      "description": "Deploy your own Docker image to Kubernetes using Deployment and Service.",
+      "difficulty": "hard",
+      "tags": ["kubernetes", "deployment", "service", "real-app"],
+      "estimated_minutes": 45,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Push your Docker image to a container registry.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker images",
+              "expected": ""
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Create a Deployment using your application image.",
+          "verification": {
+            "type": "file_contains",
+            "params": {
+              "path": "./deployment.yaml",
+              "expected": "image:"
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "Expose your application with a Service and verify it runs.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "kubectl get pods",
+              "expected": "Running"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
