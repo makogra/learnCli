@@ -13,7 +13,7 @@ class ChallengeLoaderError(Exception):
     pass
 
 
-def load_input_file(path: str) -> List[Dict[str, Any]]:
+def load_input_file(path: str) -> Dict[str, Any]:
     if not os.path.exists(path):
         raise ChallengeLoaderError(f"Input file not found: {path}")
 
@@ -23,7 +23,9 @@ def load_input_file(path: str) -> List[Dict[str, Any]]:
         except json.JSONDecodeError as e:
             raise ChallengeLoaderError(f"Invalid JSON in {path}: {e}")
 
-    if not isinstance(data, list):
+    print(f"JSON read {data}")
+
+    if not isinstance(data["challenges"], list):
         raise ChallengeLoaderError("Input JSON must be a list of challenge objects")
 
     return data
@@ -56,48 +58,32 @@ def get_next_id(existing_challenges: List[Dict[str, Any]]) -> int:
     return max(ch["id"] for ch in existing_challenges) + 1
 
 
-def process_challenges(input_data: List[Dict[str, Any]]):
-    grouped = defaultdict(list)
+def process_challenges(input_data):
 
-    # Group by category
-    for entry in input_data:
-        if "category" not in entry:
-            raise ChallengeLoaderError("Each challenge must contain a 'category' field")
-
-        category = entry["category"]
-
-        # Create new dict without category
-        challenge = {k: v for k, v in entry.items() if k != "category"}
-
-        grouped[category].append(challenge)
-
+    category = input_data["category"]
     ensure_categories_dir()
+    category_file_path = os.path.join(CATEGORIES_DIR, f"{category}.json")
 
-    for category, challenges in grouped.items():
-        category_file_path = os.path.join(CATEGORIES_DIR, f"{category}.json")
+    existing_data = load_category_file(category_file_path)
+    if existing_data:
+        existing_challenges = existing_data.get("challenges", [])
+        # TODO check if versions are the same
+    else:
+        existing_challenges = []
+        existing_data = {
+            "version": input_data["version"],
+            "challenges": []
+        }
 
-        existing_data = load_category_file(category_file_path)
+    next_id = get_next_id(existing_challenges)
 
-        if existing_data:
-            existing_challenges = existing_data.get("challenges", [])
-        else:
-            existing_challenges = []
-            existing_data = {
-                "category": category,
-                "version": 1,
-                "challenges": []
-            }
+    for challenges in input_data["challenges"]:
+        challenges["id"] = next_id
+        next_id += 1
+        existing_data["challenges"].append(challenges)
 
-        next_id = get_next_id(existing_challenges)
-
-        for challenge in challenges:
-            challenge["id"] = next_id
-            next_id += 1
-            existing_data["challenges"].append(challenge)
-
-        save_category_file(category_file_path, existing_data)
-
-        print(f"✔ Added {len(challenges)} challenge(s) to {category}.json")
+    save_category_file(category_file_path, existing_data)
+    print(f"✔ Added {len(input_data["challenges"])} challenge(s) to {category}.json")
 
 
 def main():
