@@ -23,7 +23,7 @@ def load_input_file(path: str) -> Dict[str, Any]:
         except json.JSONDecodeError as e:
             raise ChallengeLoaderError(f"Invalid JSON in {path}: {e}")
 
-    print(f"JSON read {data}")
+    # print(f"JSON read {data}")
 
     if not isinstance(data["challenges"], list):
         raise ChallengeLoaderError("Input JSON must be a list of challenge objects")
@@ -83,7 +83,7 @@ def process_challenges(input_data):
         existing_data["challenges"].append(challenges)
 
     save_category_file(category_file_path, existing_data)
-    print(f"✔ Added {len(input_data["challenges"])} challenge(s) to {category}.json")
+    # print(f"✔ Added {len(input_data["challenges"])} challenge(s) to {category}.json")
 
 
 def main():
@@ -92,7 +92,7 @@ def main():
     try:
         input_data = load_input_file(input_file)
         process_challenges(input_data)
-        print("Done.")
+        # print("Done.")
     except ChallengeLoaderError as e:
         print(f"Error: {e}")
         sys.exit(1)
