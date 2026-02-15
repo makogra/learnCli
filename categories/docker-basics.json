@@ -1,0 +1,185 @@
+{
+  "version": 1,
+  "challenges": [
+    {
+      "id": 1,
+      "title": "Install Docker Engine",
+      "description": "Install Docker Engine on your Linux system and verify that it works correctly.",
+      "difficulty": "easy",
+      "tags": [
+        "docker",
+        "installation",
+        "linux"
+      ],
+      "estimated_minutes": 20,
+      "verification": {
+        "type": "command_output_contains",
+        "params": {
+          "command": "docker --version",
+          "expected": "Docker version"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Run Your First Container",
+      "description": "Run the hello-world container and confirm it executes successfully.",
+      "difficulty": "easy",
+      "tags": [
+        "docker",
+        "container"
+      ],
+      "estimated_minutes": 5,
+      "verification": {
+        "type": "command_output_contains",
+        "params": {
+          "command": "docker run hello-world",
+          "expected": "Hello from Docker!"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "List Running Containers",
+      "description": "Start an nginx container in detached mode and verify it appears in the running containers list.",
+      "difficulty": "easy",
+      "tags": [
+        "docker",
+        "nginx"
+      ],
+      "estimated_minutes": 10,
+      "verification": {
+        "type": "command_output_contains",
+        "params": {
+          "command": "docker ps",
+          "expected": "nginx"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Stop and Remove a Container",
+      "description": "Stop a running nginx container and remove it from your system.",
+      "difficulty": "easy",
+      "tags": [
+        "docker",
+        "lifecycle"
+      ],
+      "estimated_minutes": 10,
+      "verification": {
+        "type": "command_output_contains",
+        "params": {
+          "command": "docker ps -a",
+          "expected": "Exited"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Pull an Image Manually",
+      "description": "Pull the alpine image from Docker Hub and verify it exists locally.",
+      "difficulty": "easy",
+      "tags": [
+        "docker",
+        "images"
+      ],
+      "estimated_minutes": 5,
+      "verification": {
+        "type": "command_output_contains",
+        "params": {
+          "command": "docker images",
+          "expected": "alpine"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "title": "Run a Container with Port Mapping",
+      "description": "Run an nginx container mapping port 8080 on your host to port 80 inside the container.",
+      "difficulty": "easy",
+      "tags": [
+        "docker",
+        "networking"
+      ],
+      "estimated_minutes": 10,
+      "verification": {
+        "type": "command_output_contains",
+        "params": {
+          "command": "docker ps",
+          "expected": "0.0.0.0:8080->80/tcp"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "title": "Create a Dockerfile",
+      "description": "Create a simple Dockerfile that uses alpine and prints a custom message.",
+      "difficulty": "easy",
+      "tags": [
+        "docker",
+        "dockerfile"
+      ],
+      "estimated_minutes": 15,
+      "verification": {
+        "type": "filesystem_exists",
+        "params": {
+          "path": "./Dockerfile"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "title": "Build a Custom Image",
+      "description": "Build a Docker image from your Dockerfile and verify it appears in the image list.",
+      "difficulty": "medium",
+      "tags": [
+        "docker",
+        "build"
+      ],
+      "estimated_minutes": 15,
+      "verification": {
+        "type": "command_output_contains",
+        "params": {
+          "command": "docker images",
+          "expected": "custom-image"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "title": "Run Container with Volume Mount",
+      "description": "Run a container that mounts a local folder into the container and verify the mount works.",
+      "difficulty": "medium",
+      "tags": [
+        "docker",
+        "volumes"
+      ],
+      "estimated_minutes": 20,
+      "verification": {
+        "type": "folder_contains",
+        "params": {
+          "path": "./shared-folder",
+          "expected_file": "test.txt"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "title": "Inspect a Container",
+      "description": "Use docker inspect to retrieve detailed information about a running container.",
+      "difficulty": "medium",
+      "tags": [
+        "docker",
+        "debugging"
+      ],
+      "estimated_minutes": 10,
+      "verification": {
+        "type": "command_output_contains",
+        "params": {
+          "command": "docker inspect <container_id>",
+          "expected": "\"State\""
+        }
+      }
+    }
+  ]
+}

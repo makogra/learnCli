@@ -1,0 +1,237 @@
+{
+  "version": 3,
+  "challenges": [
+    {
+      "id": 1,
+      "title": "Container Lifecycle Mastery (run + ps)",
+      "description": "Learn how containers start, run in background, and are listed using docker run and docker ps.",
+      "difficulty": "easy",
+      "tags": [
+        "docker",
+        "run",
+        "ps",
+        "lifecycle"
+      ],
+      "estimated_minutes": 20,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Run an nginx container in detached mode with a custom name.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker ps",
+              "expected": "nginx"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "List all containers including stopped ones.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker ps -a",
+              "expected": "nginx"
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "Stop the container and confirm it appears as Exited.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker ps -a",
+              "expected": "Exited"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Enter and Modify a Running Container (exec)",
+      "description": "Use docker exec to enter a running container and modify its filesystem.",
+      "difficulty": "easy",
+      "tags": [
+        "docker",
+        "exec",
+        "debugging"
+      ],
+      "estimated_minutes": 20,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Run an alpine container in interactive detached mode.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker ps",
+              "expected": "alpine"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Use docker exec to create a file inside the container.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker exec $(docker ps -q) ls /",
+              "expected": "test.txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Logs Investigation",
+      "description": "Use docker logs to inspect application output and diagnose issues.",
+      "difficulty": "easy",
+      "tags": [
+        "docker",
+        "logs",
+        "debugging"
+      ],
+      "estimated_minutes": 15,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Run a container that prints a message and exits.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker ps -a",
+              "expected": "Exited"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Retrieve logs from the stopped container.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker logs $(docker ps -aq | head -n 1)",
+              "expected": "hello"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Dockerfile Fundamentals",
+      "description": "Create a minimal Dockerfile that builds a custom nginx image with a custom index.html.",
+      "difficulty": "medium",
+      "tags": [
+        "dockerfile",
+        "build",
+        "nginx"
+      ],
+      "estimated_minutes": 30,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Create a Dockerfile using nginx as base image.",
+          "verification": {
+            "type": "filesystem_exists",
+            "params": {
+              "path": "./Dockerfile"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Add a custom index.html file and copy it into the image.",
+          "verification": {
+            "type": "filesystem_exists",
+            "params": {
+              "path": "./index.html"
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "Build the image successfully.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker images",
+              "expected": "custom-nginx"
+            }
+          }
+        },
+        {
+          "id": 4,
+          "description": "Run the container and verify the custom page appears.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "curl -s localhost:8080",
+              "expected": "Custom"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Simple Docker Compose Application",
+      "description": "Create a docker-compose.yml that runs nginx and redis together.",
+      "difficulty": "medium",
+      "tags": [
+        "docker-compose",
+        "multi-container"
+      ],
+      "estimated_minutes": 35,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Create a docker-compose.yml file defining nginx and redis services.",
+          "verification": {
+            "type": "filesystem_exists",
+            "params": {
+              "path": "./docker-compose.yml"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Start services using docker compose up -d.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker compose ps",
+              "expected": "nginx"
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "Verify both containers are running.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker compose ps",
+              "expected": "redis"
+            }
+          }
+        },
+        {
+          "id": 4,
+          "description": "Stop and remove the services using docker compose down.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker compose ps",
+              "expected": ""
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,274 @@
+{
+  "version": 2,
+  "challenges": [
+    {
+      "id": 1,
+      "title": "Break and Fix Port Mapping",
+      "description": "Run nginx with incorrect port mapping, diagnose why it is not accessible, and fix it.",
+      "difficulty": "easy",
+      "tags": [
+        "docker",
+        "networking",
+        "debugging"
+      ],
+      "estimated_minutes": 20,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Run nginx mapping port 8080 on host to port 81 inside the container.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker ps",
+              "expected": "8080->81"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Verify that accessing localhost:8080 does NOT work.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "curl -s localhost:8080 || echo failed",
+              "expected": "failed"
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "Inspect the container and identify which port nginx listens on.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker inspect $(docker ps -q)",
+              "expected": "\"80/tcp\""
+            }
+          }
+        },
+        {
+          "id": 4,
+          "description": "Fix the port mapping and verify nginx works on localhost:8080.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "curl -s localhost:8080",
+              "expected": "nginx"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "CrashLoop Debugging",
+      "description": "Create a container that exits immediately and diagnose why it stops.",
+      "difficulty": "medium",
+      "tags": [
+        "docker",
+        "debugging",
+        "lifecycle"
+      ],
+      "estimated_minutes": 25,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Run an alpine container with command 'echo hello' without -it.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker ps -a",
+              "expected": "Exited"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Inspect logs of the stopped container.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker logs $(docker ps -aq | head -n 1)",
+              "expected": "hello"
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "Run alpine in interactive mode so it stays alive.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker ps",
+              "expected": "alpine"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Broken Dockerfile Recovery",
+      "description": "Intentionally break a Dockerfile build and debug the failure.",
+      "difficulty": "medium",
+      "tags": [
+        "docker",
+        "dockerfile",
+        "build",
+        "debugging"
+      ],
+      "estimated_minutes": 30,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Create a Dockerfile using a non-existent base image.",
+          "verification": {
+            "type": "filesystem_exists",
+            "params": {
+              "path": "./Dockerfile"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Attempt to build the image and observe the failure.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker build -t broken-image . || true",
+              "expected": "pull access denied"
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "Fix the base image and rebuild successfully.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker images",
+              "expected": "broken-image"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Volume Data Persistence Test",
+      "description": "Prove that container data is lost without a volume and preserved with one.",
+      "difficulty": "hard",
+      "tags": [
+        "docker",
+        "volumes",
+        "data",
+        "debugging"
+      ],
+      "estimated_minutes": 40,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Run an alpine container and create a file inside it.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker exec $(docker ps -q) ls /",
+              "expected": ""
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Stop and remove the container and confirm the file is gone.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker ps -a",
+              "expected": ""
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "Run a new container with a named volume and create a file.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker volume ls",
+              "expected": ""
+            }
+          }
+        },
+        {
+          "id": 4,
+          "description": "Remove the container and reattach the volume to verify the file still exists.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker exec $(docker ps -q) ls /data",
+              "expected": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Broken Docker Compose Service",
+      "description": "Create a docker-compose setup with two services and intentionally break network communication.",
+      "difficulty": "hard",
+      "tags": [
+        "docker-compose",
+        "networking",
+        "microservices",
+        "debugging"
+      ],
+      "estimated_minutes": 45,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Create docker-compose.yml with web and redis services.",
+          "verification": {
+            "type": "filesystem_exists",
+            "params": {
+              "path": "./docker-compose.yml"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Change the redis hostname in web configuration to an incorrect value.",
+          "verification": {
+            "type": "file_contains",
+            "params": {
+              "path": "./docker-compose.yml",
+              "expected": "wrong-redis"
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "Start services and observe connection failure in logs.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker compose logs",
+              "expected": "connection"
+            }
+          }
+        },
+        {
+          "id": 4,
+          "description": "Fix the hostname and verify successful communication.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker compose logs",
+              "expected": "Ready"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
