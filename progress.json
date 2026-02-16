@@ -1,0 +1,16 @@
+{
+  "active": {
+    "category": "docker-basics",
+    "id": 6
+  },
+  "completed": {
+    "docker-basics": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "hint_index": 0
+}
