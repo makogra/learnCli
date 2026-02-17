@@ -1,0 +1,242 @@
+{
+  "version": 1,
+  "challenges": [
+    {
+      "id": 1,
+      "title": "Understand and Use Docker Prune",
+      "description": "Explore how Docker accumulates unused images, containers, and volumes, and safely clean them.",
+      "difficulty": "easy",
+      "tags": [
+        "docker",
+        "cleanup",
+        "prune"
+      ],
+      "estimated_minutes": 25,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Create multiple stopped containers and dangling images.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker ps -a",
+              "expected": "Exited"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Run docker system prune in dry-run mode (without -f) and inspect what will be removed.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker system prune",
+              "expected": "Would remove"
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "Execute prune and verify unused resources are removed.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker ps -a",
+              "expected": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Dockerfile ARG vs ENV",
+      "description": "Understand the difference between build-time (ARG) and runtime (ENV) variables.",
+      "difficulty": "medium",
+      "tags": [
+        "dockerfile",
+        "arg",
+        "env"
+      ],
+      "estimated_minutes": 35,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Create a Dockerfile using ARG to define a build-time variable.",
+          "verification": {
+            "type": "file_contains",
+            "params": {
+              "path": "./Dockerfile",
+              "expected": "ARG"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Use ENV to define a runtime environment variable.",
+          "verification": {
+            "type": "file_contains",
+            "params": {
+              "path": "./Dockerfile",
+              "expected": "ENV"
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "Build the image passing a custom ARG value and verify ENV is available at runtime.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker inspect $(docker images -q | head -n1)",
+              "expected": "Env"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Use Dockerfile LABEL for Metadata",
+      "description": "Add metadata to your Docker image using LABEL and inspect it.",
+      "difficulty": "easy",
+      "tags": [
+        "dockerfile",
+        "label",
+        "metadata"
+      ],
+      "estimated_minutes": 20,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Add LABEL fields such as maintainer and version in Dockerfile.",
+          "verification": {
+            "type": "file_contains",
+            "params": {
+              "path": "./Dockerfile",
+              "expected": "LABEL"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Build the image and inspect metadata.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker inspect $(docker images -q | head -n1)",
+              "expected": "Labels"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Override ENV at Runtime",
+      "description": "Learn how runtime environment variables override Dockerfile ENV values.",
+      "difficulty": "medium",
+      "tags": [
+        "docker",
+        "env",
+        "runtime"
+      ],
+      "estimated_minutes": 25,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Run a container that prints an ENV variable defined in Dockerfile.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker logs $(docker ps -aq | head -n1)",
+              "expected": ""
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Run the same container overriding the ENV variable with -e flag.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker logs $(docker ps -aq | head -n1)",
+              "expected": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Use .dockerignore Properly",
+      "description": "Prevent unnecessary files from being copied into your Docker image.",
+      "difficulty": "medium",
+      "tags": [
+        "dockerfile",
+        "optimization",
+        "dockerignore"
+      ],
+      "estimated_minutes": 30,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Create a .dockerignore file excluding node_modules or build artifacts.",
+          "verification": {
+            "type": "filesystem_exists",
+            "params": {
+              "path": "./.dockerignore"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Build image and verify excluded files are not present inside container.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker exec $(docker ps -q) ls /app",
+              "expected": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Understand ENTRYPOINT vs CMD",
+      "description": "Experiment with ENTRYPOINT and CMD to understand how container startup works.",
+      "difficulty": "medium",
+      "tags": [
+        "dockerfile",
+        "entrypoint",
+        "cmd"
+      ],
+      "estimated_minutes": 35,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Create a Dockerfile using CMD only and test overriding command at runtime.",
+          "verification": {
+            "type": "file_contains",
+            "params": {
+              "path": "./Dockerfile",
+              "expected": "CMD"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Modify Dockerfile to use ENTRYPOINT and observe behavior difference.",
+          "verification": {
+            "type": "file_contains",
+            "params": {
+              "path": "./Dockerfile",
+              "expected": "ENTRYPOINT"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
