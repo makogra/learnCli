@@ -1,0 +1,209 @@
+{
+  "category": "registry",
+  "version": 1,
+  "challenges": [
+    {
+      "id": 1,
+      "title": "Tag an Image Properly",
+      "description": "Tag a local image using semantic versioning and prepare it for pushing to a registry.",
+      "difficulty": "easy",
+      "tags": ["docker", "registry", "tagging"],
+      "estimated_minutes": 20,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Build or use an existing local Docker image.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker images",
+              "expected": "latest"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Tag the image using format username/app:1.0.0.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker images",
+              "expected": "1.0.0"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Push Image to Docker Hub",
+      "description": "Authenticate with Docker Hub and push a versioned image.",
+      "difficulty": "medium",
+      "tags": ["docker", "registry", "push"],
+      "estimated_minutes": 25,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Login to Docker Hub using docker login.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker info",
+              "expected": "Username"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Push the tagged image to Docker Hub.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker push username/app:1.0.0",
+              "expected": "digest"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Pull Image on Clean Environment",
+      "description": "Remove the local image and pull it again from the registry.",
+      "difficulty": "medium",
+      "tags": ["docker", "registry", "pull"],
+      "estimated_minutes": 20,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Remove local image using docker rmi.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker images",
+              "expected": ""
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Pull the image from Docker Hub.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker pull username/app:1.0.0",
+              "expected": "Downloaded"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Use a Private Registry (Local)",
+      "description": "Run a local Docker registry container and push an image to it.",
+      "difficulty": "medium",
+      "tags": ["docker", "registry", "local"],
+      "estimated_minutes": 35,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Run a local registry container on port 5000.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker ps",
+              "expected": "registry"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Tag an image for localhost:5000 and push it.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker push localhost:5000/app:dev",
+              "expected": "digest"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Break Registry Authentication and Debug",
+      "description": "Attempt to push without authentication and diagnose the error.",
+      "difficulty": "medium",
+      "tags": ["docker", "registry", "debugging"],
+      "estimated_minutes": 25,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Logout from Docker Hub.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker logout",
+              "expected": "Removing login credentials"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Attempt to push an image without being logged in.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker push username/app:1.0.0 || true",
+              "expected": "denied"
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "Log in again and verify push succeeds.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker login",
+              "expected": "Login Succeeded"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Use Image Digests Instead of Tags",
+      "description": "Pull and run an image using its immutable digest instead of a tag.",
+      "difficulty": "hard",
+      "tags": ["docker", "registry", "digest"],
+      "estimated_minutes": 30,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Inspect a pushed image and locate its digest.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker images --digests",
+              "expected": "sha256"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Run the image using the digest reference.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker run username/app@sha256",
+              "expected": ""
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
