@@ -1,7 +1,7 @@
 {
   "active": {
     "category": "docker-basics",
-    "id": 6
+    "id": 9
   },
   "completed": {
     "docker-basics": [
@@ -9,7 +9,10 @@
       2,
       3,
       4,
-      5
+      5,
+      6,
+      7,
+      8
     ]
   },
   "hint_index": 0

@@ -1,0 +1,228 @@
+{
+  "version": 1,
+  "challenges": [
+    {
+      "id": 1,
+      "title": "Create a Multi-Stage Dockerfile",
+      "description": "Build an application using multi-stage Docker build to separate build and runtime environments.",
+      "difficulty": "medium",
+      "tags": [
+        "dockerfile",
+        "multistage",
+        "build"
+      ],
+      "estimated_minutes": 40,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Create a Dockerfile with a build stage and a runtime stage.",
+          "verification": {
+            "type": "file_contains",
+            "params": {
+              "path": "./Dockerfile",
+              "expected": "AS builder"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Copy only the compiled artifact into the final stage.",
+          "verification": {
+            "type": "file_contains",
+            "params": {
+              "path": "./Dockerfile",
+              "expected": "COPY --from=builder"
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "Build the image and verify it runs successfully.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker images",
+              "expected": "latest"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Reduce Image Size",
+      "description": "Compare single-stage vs multi-stage image size and optimize the final image.",
+      "difficulty": "medium",
+      "tags": [
+        "dockerfile",
+        "optimization"
+      ],
+      "estimated_minutes": 30,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Build a single-stage image.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker images",
+              "expected": ""
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Build a multi-stage version.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker images",
+              "expected": ""
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "Verify the multi-stage image is smaller.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker images",
+              "expected": "MB"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Container-to-Container Communication (Default Network)",
+      "description": "Run two containers and make them communicate using Docker's default bridge network.",
+      "difficulty": "medium",
+      "tags": [
+        "docker",
+        "networking",
+        "bridge"
+      ],
+      "estimated_minutes": 35,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Run a redis container with a custom name.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker ps",
+              "expected": "redis"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Run a second container and try to connect using container name.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker exec $(docker ps -q) ping redis || true",
+              "expected": ""
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Create and Use Custom Docker Network",
+      "description": "Create a custom bridge network and attach containers to it.",
+      "difficulty": "medium",
+      "tags": [
+        "docker",
+        "network",
+        "bridge"
+      ],
+      "estimated_minutes": 30,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Create a custom bridge network.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker network ls",
+              "expected": "bridge"
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Run two containers attached to the custom network.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker inspect $(docker ps -q | head -n1)",
+              "expected": "Networks"
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "Verify containers can resolve each other by name.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker exec $(docker ps -q) ping other-container",
+              "expected": "PING"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Break Networking and Debug",
+      "description": "Disconnect a container from a network and diagnose connectivity failure.",
+      "difficulty": "hard",
+      "tags": [
+        "docker",
+        "networking",
+        "debugging"
+      ],
+      "estimated_minutes": 35,
+      "steps": [
+        {
+          "id": 1,
+          "description": "Disconnect one container from the custom network.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker network inspect",
+              "expected": ""
+            }
+          }
+        },
+        {
+          "id": 2,
+          "description": "Verify communication between containers fails.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker exec $(docker ps -q) ping other-container || true",
+              "expected": ""
+            }
+          }
+        },
+        {
+          "id": 3,
+          "description": "Reconnect the container and verify communication works again.",
+          "verification": {
+            "type": "command_output_contains",
+            "params": {
+              "command": "docker exec $(docker ps -q) ping other-container",
+              "expected": "PING"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
