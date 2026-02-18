@@ -147,8 +147,8 @@ def print_active_challenge(progress):
     if "description" in challenge:
         print(challenge["description"])
 
-    # for step in challenge.get("steps", []):
-    #     print(f"  Step {step['id']}: {step['description']}")
+    for step in challenge.get("steps", []):
+        print(f"  Step {step['id']}: {step['description']}")
 
 
 def cmd_hint(progress):
@@ -183,7 +183,7 @@ def cmd_hint(progress):
     save_progress(progress)
 
 
-def cmd_check(progress):
+def cmd_check(args, progress):
     active = progress.get("active")
     if not active:
         print("No active challenge.")
@@ -195,10 +195,18 @@ def cmd_check(progress):
     data = load_category(category)
     challenge = find_challenge(data, cid)
 
-    for step in challenge.get("steps", []):
+    steps = challenge.get("steps", [])
+    if len(args) == 0:
+        for step in steps: 
+            print(f"\nStep {step['id']} solution:")
+            print(pretty_json(step.get("verification")))
+    else:
+        # steps in json starts from 1, so it should be decresed
+        index = int(args[0]) -1
+        step = steps[index -1]
         print(f"\nStep {step['id']} solution:")
         print(pretty_json(step.get("verification")))
-
+    
     print(pretty_json(challenge.get("verification")))
 
 
@@ -287,7 +295,7 @@ def main():
     elif cmd == "hint":
         cmd_hint(progress)
     elif cmd == "check":
-        cmd_check(progress)
+        cmd_check(args[1:], progress)
     elif cmd == "ok":
         cmd_ok(progress)
     elif cmd == "skip":
